@@ -1,0 +1,14 @@
+.profile {
+  justify-content: center;
+  margin-top: 50px;
+}
+.profile form {
+  display: flex;
+  align-items: center;
+  flex-direction: column;
+  flex-wrap: wrap;
+}
+.profile h1 {
+  text-align: center;
+  margin-bottom: 40px;
+}

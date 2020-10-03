@@ -45,7 +45,9 @@ const Input = ({
           id="exampleFormControlSelect1"
           name={name}
           onChange={(e) => onChange(e.target.value)}
+          value={value}
         >
+          {console.log('select', value)}
           {
             options.map(option => {
               return <option

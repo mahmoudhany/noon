@@ -2,3 +2,17 @@
   display: flex;
   justify-content: space-between;
 }
+.form-buttons button {
+  margin-right: 20px;
+}
+
+.second-form {
+  justify-content: center;
+  margin-top: 50px;
+}
+.second-form form {
+  display: flex;
+  align-items: center;
+  flex-direction: column;
+  flex-wrap: wrap;
+}

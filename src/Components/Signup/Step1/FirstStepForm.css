@@ -1,5 +1,8 @@
-.signup {
+.first-step {
   margin: 0 auto;
   max-width: 600px;
   padding: 50px;
+}
+.first-step p {
+  text-align: center;
 }

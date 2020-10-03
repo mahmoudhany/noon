@@ -1,18 +1,24 @@
 import React, { Component } from 'react';
-import './Signup.css'
+// import './Signup.css'
 import FirstStepForm from './Step1/FirstStepForm'
 import SecondStepForm from './Step2/SecondStepForm'
-
 class Signup extends Component {
 
   state = {
     step: 1,
+    user: null
   }
-
-  nextStep = () => {
+  componentWillUnmount() {
+    this.setState({
+      step: 1,
+      user: null
+    })
+  }
+  nextStep = (user) => {
     const { step } = this.state;
     this.setState({
-      step: step + 1
+      step: step + 1,
+      user: user
     })
   }
   prevStep = () => {
@@ -21,23 +27,26 @@ class Signup extends Component {
       step: step - 1
     })
   }
-  render() {
+  rederSteps = () => {
     switch (this.state.step) {
       case 1:
         return (
-          <div className='signup'>
-            <FirstStepForm nextStep={this.nextStep} />
-          </div>
+          <FirstStepForm nextStep={this.nextStep} />
         )
       case 2:
         return (
-          <div className='signup' >
-            <SecondStepForm prevStep={this.prevStep} />
-          </div>
+          <SecondStepForm prevStep={this.prevStep} userObj={this.state.user} />
         )
       default:
         break;
     }
+  }
+  render() {
+    return (
+      <div>
+        {this.rederSteps()}
+      </div>
+    )
   }
 };
 

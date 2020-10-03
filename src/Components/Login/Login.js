@@ -1,12 +1,22 @@
 import React, { Component } from 'react';
-import { auth } from '../../../Firebase'
-import { Link } from 'react-router-dom'
-import './FirstStepForm.css'
+import { auth } from '../../Firebase'
+import { withRouter } from 'react-router-dom'
+import { connect } from 'react-redux';
+import { getUser } from '../../Redux/Actions/Auth'
+import Input from '../UI/Input/Input'
+import { FormValidation } from '../../Utility/FormValidation';
+import './Login.css'
+// log connect to render state
+//from redux 
 
-import Input from '../../UI/Input/Input'
-import { FormValidation } from '../../../Utility/FormValidation';
 
-class FirstStepForm extends Component {
+
+
+
+
+
+
+class Login extends Component {
   state = {
     fields: [
       {
@@ -30,17 +40,6 @@ class FirstStepForm extends Component {
         errorMsg: 'password cannot be blank',
         value: '',
         isRequired: true
-      },
-      {
-        name: 'repeatPassword',
-        label: 'Confirm password',
-        placeholder: "Confirm password",
-        inputType: 'text',
-        type: 'password',
-        error: null,
-        errorMsg: 'password cannot be blank',
-        value: '',
-        isRequired: true
       }
     ],
     loading: false,
@@ -51,7 +50,7 @@ class FirstStepForm extends Component {
     fields[index].value = val;
     this.setState({ fields });
   }
-  continue = (e) => {
+  onSubmit = (e) => {
     e.preventDefault();
     const { fields } = this.state;
     const { updatedFields, isValid } = FormValidation({ fields });
@@ -60,29 +59,27 @@ class FirstStepForm extends Component {
       this.setState({ isValid: true });
       const { email, password } = this.prepareData()
 
-      this.signup(email, password)
+      this.login(email, password)
     }
   }
   prepareData = () => {
     let formData = {}
     const data = this.state.fields.map((data) => data)
     for (const key in data) {
-      if (key < 2) {
-        formData = {
-          ...formData, ...{ [data[key].name]: data[key].value }
-        }
+      formData = {
+        ...formData, ...{ [data[key].name]: data[key].value }
       }
     }
     return formData
   }
-  signup = (email, password) => {
+  login = (email, password) => {
     this.setState({ loading: true })
-
-    auth.createUserWithEmailAndPassword(email, password)
+    auth.signInWithEmailAndPassword(email, password)
       .then(response => {
+        console.log('login', response.user);
         this.setState({ loading: false })
-        this.props.nextStep(response.user)
-        console.log('first step', response.user);
+        this.props.onAuth(response.user)
+        this.props.history.push('/')
       })
       .catch(error => {
         this.setState({ loading: false })
@@ -93,7 +90,7 @@ class FirstStepForm extends Component {
   render() {
     const { fields } = this.state
     return (
-      <div className='first-step'>
+      <div className='login'>
         <form>
           {fields.map((fld, index) => {
             return (
@@ -108,15 +105,19 @@ class FirstStepForm extends Component {
           <button
             type="submit"
             className="btn btn-primary"
-            onClick={this.continue}
+            onClick={this.onSubmit}
             disabled={this.state.loading ? true : false}
-          >Next</button>
+          >{this.state.loading ? 'loading...' : 'Login'}</button>
         </form>
-        <br />
-        <p>Already have account, <Link to='/login'>Login</Link></p>
-      </div >
+      </div>
     )
   }
 }
 
-export default FirstStepForm;
+
+const mapDispatchToProps = dispatch => {
+  return {
+    onAuth: (user) => dispatch(getUser(user))
+  }
+}
+export default connect(null, mapDispatchToProps)(withRouter(Login));

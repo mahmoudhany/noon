@@ -1,13 +1,11 @@
 import React, { Component } from 'react';
-import Input from '../../UI/Input/Input'
-import './SecondStepForm.css'
-import { FormValidation } from '../../../Utility/FormValidation'
-import { firestore } from '../../../Firebase'
-import { withRouter } from 'react-router-dom';
+import Input from '../UI/Input/Input'
+import './profile.css'
+import { FormValidation } from '../../Utility/FormValidation'
+import { firestore } from '../../Firebase'
 import { connect } from 'react-redux';
-import { getUser } from '../../../Redux/Actions/Auth'
 
-class SecondStepForm extends Component {
+class Profile extends Component {
   state = {
     fields: [
       {
@@ -52,7 +50,7 @@ class SecondStepForm extends Component {
         error: null,
         options: ['male', 'female'],
         errorMsg: 'Gender cannot be blank',
-        value: 'male',
+        value: '',
         isRequired: true
       },
       {
@@ -102,10 +100,41 @@ class SecondStepForm extends Component {
     isValid: false,
     loading: false
   }
-  back = (e) => {
-    e.preventDefault()
-    this.props.prevStep()
+  componentDidMount() {
+    this.fillForm()
   }
+  fillForm = () => {
+    let docRef = firestore.collection("users").doc(this.props.user.uid);
+    const { fields } = this.state
+
+    docRef.get().then((doc) => {
+      if (doc.exists) {
+        console.log("Document data:", doc.data());
+        var updatedFields = [];
+
+        for (let prop in doc.data()) {
+          fields.forEach(fld => {
+            if (fld.name === prop) {
+              fld.value = doc.data()[prop]
+              updatedFields.push(fld)
+            }
+          });
+        }
+        this.setState({
+          ...fields, fields: updatedFields.sort((a, b) => {
+            return fields.indexOf(a) - fields.indexOf(b)
+          })
+        })
+        console.log(updatedFields)
+      } else {
+        // doc.data() will be undefined in this case
+        console.log("No such document!");
+      }
+    }).catch((error) => {
+      console.log("Error getting document:", error);
+    });
+  }
+
   onChangeInput = (val, index) => {
     const { fields } = this.state;
     fields[index].value = val;
@@ -121,7 +150,7 @@ class SecondStepForm extends Component {
       this.setState({ isValid: true });
       const formData = this.prepareData()
 
-      this.submitUserData(formData, this.props.userObj)
+      this.submitUserData(formData, this.props.user)
     }
   }
   prepareData = () => {
@@ -141,7 +170,6 @@ class SecondStepForm extends Component {
       .then(() => {
         console.log("Document written with ID: ", user.uid);
         this.setState({ loading: false })
-        this.props.onAuth(user)
         this.props.history.push('/')
       })
       .catch((error) => {
@@ -152,7 +180,8 @@ class SecondStepForm extends Component {
   render() {
     const { fields } = this.state
     return (
-      <div className='container second-form'>
+      <div className='container profile'>
+        <h1>Edit Profile</h1>
         <form>
           <div className='form-row'>
             {fields.map((fld, index) => {
@@ -170,12 +199,6 @@ class SecondStepForm extends Component {
           <div className='form-buttons'>
             <button
               type="submit"
-              className="btn btn-dark"
-              onClick={this.back}
-              disabled={this.state.loading ? true : false}
-            >Back</button>
-            <button
-              type="submit"
               className="btn btn-primary"
               onClick={this.onSubmit}
               disabled={this.state.loading ? true : false}
@@ -191,9 +214,5 @@ const mapStateToProps = state => {
     user: state.auth.user
   }
 }
-const mapDispatchToProps = dispatch => {
-  return {
-    onAuth: (user) => dispatch(getUser(user))
-  }
-}
-export default connect(mapStateToProps, mapDispatchToProps)(withRouter(SecondStepForm));
+
+export default connect(mapStateToProps)(Profile);
