@@ -1,10 +1,10 @@
 import React from 'react';
-import './Toolbar.css'
+import './Toolbar.scss'
 import { NavLink, withRouter } from 'react-router-dom'
 import { connect } from 'react-redux'
 import { auth } from '../../Firebase'
 import * as actions from '../../Redux/Actions/Auth'
-
+import CartIcon from '../Cart/CartIcon'
 const Toolbar = (props) => {
   const logout = () => {
     console.log(props);
@@ -23,6 +23,11 @@ const Toolbar = (props) => {
           <NavLink className="nav-link" to="/profile">Profile<span className="sr-only">(current)</span></NavLink>
         </li>
         <li className="nav-item active">
+          <NavLink className="nav-link" to="/cart">
+            <CartIcon />
+            <span className="sr-only">(current)</span></NavLink>
+        </li>
+        <li className="nav-item active">
           <button className='btn btn-danger my-2 my-sm-0' onClick={logout}>Logout</button>
         </li>
       </ul>
@@ -30,6 +35,11 @@ const Toolbar = (props) => {
   } else {
     links = (
       <ul className="navbar-nav ml-auto">
+        <li className="nav-item active">
+          <NavLink className="nav-link" to="/cart">
+            <CartIcon />
+            <span className="sr-only">(current)</span></NavLink>
+        </li>
         <li className="nav-item active">
           <NavLink className="nav-link" to="/signup">Sign Up <span className="sr-only">(current)</span></NavLink>
         </li>

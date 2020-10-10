@@ -1,0 +1,14 @@
+.cart-icon {
+  position: relative;
+  i {
+    font-size: 24px;
+  }
+  span {
+    position: absolute;
+    font-family: "lato", sans-serif;
+    font-size: 12px;
+    font-weight: 300;
+    top: -5px;
+    // right: 0px;
+  }
+}

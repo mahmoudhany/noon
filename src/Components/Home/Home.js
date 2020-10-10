@@ -1,4 +1,6 @@
 import React, { Component } from 'react';
+import Products from '../Products'
+import './Home.scss'
 
 // import { withRouter } from 'react-router-dom'
 
@@ -6,10 +8,9 @@ class Home extends Component {
 
   render() {
     return (
-      <div>
-        Home
-        
-      </div>
+      <section className='container-fluid container__home'>
+        <Products />
+      </section>
     );
   }
 }
